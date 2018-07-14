@@ -1,2 +1,139 @@
-# osm-aggregator
-Aggregate extracted OpenStreetMap tagdata 
+# osm-tag-aggregator
+
+[osm-extract-tags](https://github.com/tagdynamics-org/osm-extract-tags) is a tool
+for extracting tag metadata from an OpenStreetMap (OSM) data export with the entire
+history of the OSM. This repo (osm-tag-aggregator) contains a tool for computing
+various aggregates from this data. The below aggregates are currently implemented:
+
+#### LATEST_REVCOUNTS
+
+For each tag state, compute the total number of map elements that are currently in 
+that state. Only include tag states with >= 5 map elements.
+
+Example output:
+
+```
+{"key":{"state":"DEL","tags":[]},"n":543}
+{"key":{"state":"VIS","tags":[]},"n":266}
+{"key":{"state":"VIS","tags":["2:pizzeria"]},"n":128}
+{"key":{"state":"VIS","tags":["2:bench"]},"n":125}
+...
+```
+
+#### TOTAL_REVCOUNTS
+For each tag state, compute the total number of map elements that at some point have 
+been in that state.
+
+Example output:
+
+```
+{"key":{"state":"DEL","tags":[]},"n":2060}
+{"key":{"state":"VIS","tags":[]},"n":939}
+{"key":{"state":"VIS","tags":["2:water"]},"n":455}
+{"key":{"state":"VIS","tags":["1:wall"]},"n":430}
+...
+```
+
+#### TRANSITION_COUNTS
+
+For each transition between tag states, compute the total number of times a map element
+has undergone that transition. If the same map element has transitioned multiple times
+all transitions are counted. Skip transitions that have ocurred <5 times.
+
+Example output:
+
+```
+...
+```
+
+#### PER_DAY_DELTA_COUNTS
+
+For each day and tag state, compute a delta (a positive or negative number, but not 0) giving
+how the number of map elements with the tag state has changed during that day. By integrating the delta:s over time one can get the number of map elements in a tag state for any given day (during OSM's recorded history).
+
+Example output:
+
+```
+...
+```
+
+------
+
+ - **map element** means either a node, way or a relation.
+ - **tag state** for example `["0:tag_value1", "a:tag_value2"]`. The codes `0` and `a` refer to the list of
+ tags selected or extraction by osm-extract-tags.
+
+The implementation is streaming and does not need to load the entire input file into memory.
+
+## Setup up and running unit tests
+
+For running tests one need to clone with `--recurse-submodules` to get the testdata git submodule.
+
+```bash
+git clone --recurse-submodules <<TODO>>
+gradle wrapper
+
+# run unit tests from command line
+./gradlew test
+```
+
+### IntelliJ IDEA setup up
+Import as a gradle problem. During importing, the IDE may ask for the "gradle home directory". See [here](https://stackoverflow.com/questions/18495474/how-to-define-gradles-home-in-idea) for instructions on how to determine this.
+
+### Syntax for running
+
+```bash
+bash launch.sh aggregator /path/to/input.jsonl /path/to/output.jsonl
+```
+
+ - `aggregator` is one of `LATEST_REVCOUNTS`, ..., `PER_DAY_DELTA_COUNTS`. See above.
+ - input file is output from the [osm-extract-tags](https://github.com/tagdynamics-org/osm-extract-tags) tool.
+
+
+### Running in the cloud
+
+```
+export DEBIAN_FRONTEND=noninteractive
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install git zip mg tmux
+
+# install docker: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+
+# https://hub.docker.com/r/hseeberger/scala-sbt/
+sudo docker pull hseeberger/scala-sbt:8u171_2.12.6_1.1.6
+sudo docker run -v `pwd`/data/:/data -v `pwd`/2-aggregator:/code -it --rm hseeberger/scala-sbt:8u171_2.12.6_1.1.6
+
+bash launch.sh LATEST_REVCOUNTS /data/history.tag.jsonl /data/latest-revs.jsonl
+bash launch.sh TOTAL_REVCOUNTS /data/history.tag.jsonl /data/total-rev-counts.jsonl
+bash launch.sh PER_DAY_DELTA_COUNTS /data/history.tag.jsonl /data/per-day-delta-counts.jsonl
+bash launch.sh TRANSITION_COUNTS /data/history.tag.jsonl /data/transition-counts.jsonl
+```
+
+```
+ - OSM input data ~5000M map elements + their version histories
+ - Exported revision history JSONL file: 552M lines (5528 batches @100k)
+ - M = 1e6, k=1e3
+
+(m5.xlarge; 16G memory; 4VCPU, no filtering)
+LATEST_REVCOUNTS      25m
+TRANSITION_COUNTS     27m
+TOTAL_REVCOUNTS       28m
+PER_DAY_DELTA_COUNTS  35m
+```
+
+ - [How to transfer data between EC2 instances](http://blog.e-zest.com/how-to-do-scp-from-one-ec2-instance-to-another-ec2-instance/)
+
+## Contributions
+
+Ideas, questions and/or contributions are welcome.
+
+## License
+
+Copyright 2018 Matias Dahl.
+
+Please note that `osm-tag-extract` is designed to process OpenStreetMap data. This 
+data is available under the [Open Database License](https://openstreetmap.org/copyright). 
+See also the [OSMF wiki](https://wiki.openstreetmap.org/wiki/GDPR) regarding OpenStreetMap
+data and the [GDPR](https://gdpr-info.eu/).
+
