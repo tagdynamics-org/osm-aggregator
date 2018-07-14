@@ -5,7 +5,7 @@ for extracting tag metadata from an OpenStreetMap (OSM) data export with the ent
 history of the OSM. This repo (osm-tag-aggregator) contains a tool for computing
 various aggregates from this data. The below aggregates are currently implemented:
 
-#### LATEST_REVCOUNTS
+#### LIVE_REVCOUNTS
 
 For each tag state, compute the total number of map elements that are currently in 
 that state. Only include tag states with >= 5 map elements.
@@ -49,7 +49,7 @@ Example output:
 #### PER_DAY_DELTA_COUNTS
 
 For each day and tag state, compute a delta (a positive or negative number, but not 0) giving
-how the number of map elements with the tag state has changed during that day. By integrating the delta:s over time one can get the number of map elements in a tag state for any given day (during OSM's recorded history).
+how the number of map elements with that tag state has changed during that day. By integrating the delta:s over time one can get the number of map elements in a tag state for any given day (during OSM's recorded history).
 
 Example output:
 
@@ -57,27 +57,30 @@ Example output:
 ...
 ```
 
-------
+##### Terminology
 
- - **map element** means either a node, way or a relation.
- - **tag state** for example `["0:tag_value1", "a:tag_value2"]`. The codes `0` and `a` refer to the list of
- tags selected or extraction by osm-extract-tags.
+ - A **map element** means either a node, way or a relation in the OSM data.
+ - **element states**
+    - Visible with tags `["0:tag_value1", "a:tag_value2"]`. The codes `0` and `a` refer to the [list of tags](https://github.com/tagdynamics-org/osm-extract-tags#extract-tags-from-an-osm-file) selected or extraction by osm-extract-tags.
+    - Deleted
 
 The implementation is streaming and does not need to load the entire input file into memory.
 
+
+------
+
 ## Setup up and running unit tests
 
-For running tests one need to clone with `--recurse-submodules` to get the testdata git submodule.
+For running tests one need to clone with `--recurse-submodules` to get the project [testdata](https://github.com/tagdynamics-org/testdata) git submodule. Then the unit tests can be run from command line as follows (provided gradle is first installed):
 
 ```bash
-git clone --recurse-submodules <<TODO>>
+git clone --recurse-submodules git@github.com:tagdynamics-org/osm-tag-aggregator.git
 gradle wrapper
-
-# run unit tests from command line
 ./gradlew test
 ```
 
 ### IntelliJ IDEA setup up
+
 Import as a gradle problem. During importing, the IDE may ask for the "gradle home directory". See [here](https://stackoverflow.com/questions/18495474/how-to-define-gradles-home-in-idea) for instructions on how to determine this.
 
 ### Syntax for running
@@ -104,7 +107,7 @@ sudo apt-get -y install git zip mg tmux
 sudo docker pull hseeberger/scala-sbt:8u171_2.12.6_1.1.6
 sudo docker run -v `pwd`/data/:/data -v `pwd`/2-aggregator:/code -it --rm hseeberger/scala-sbt:8u171_2.12.6_1.1.6
 
-bash launch.sh LATEST_REVCOUNTS /data/history.tag.jsonl /data/latest-revs.jsonl
+bash launch.sh LIVE_REVCOUNTS /data/history.tag.jsonl /data/latest-revs.jsonl
 bash launch.sh TOTAL_REVCOUNTS /data/history.tag.jsonl /data/total-rev-counts.jsonl
 bash launch.sh PER_DAY_DELTA_COUNTS /data/history.tag.jsonl /data/per-day-delta-counts.jsonl
 bash launch.sh TRANSITION_COUNTS /data/history.tag.jsonl /data/transition-counts.jsonl
@@ -113,9 +116,8 @@ bash launch.sh TRANSITION_COUNTS /data/history.tag.jsonl /data/transition-counts
 ```
  - OSM input data ~5000M map elements + their version histories
  - Exported revision history JSONL file: 552M lines (5528 batches @100k)
- - M = 1e6, k=1e3
 
-(m5.xlarge; 16G memory; 4VCPU, no filtering)
+(m5.xlarge; 16G memory; 4VCPU)
 LATEST_REVCOUNTS      25m
 TRANSITION_COUNTS     27m
 TOTAL_REVCOUNTS       28m
@@ -132,8 +134,6 @@ Ideas, questions and/or contributions are welcome.
 
 Copyright 2018 Matias Dahl.
 
-Please note that `osm-tag-extract` is designed to process OpenStreetMap data. This 
-data is available under the [Open Database License](https://openstreetmap.org/copyright). 
-See also the [OSMF wiki](https://wiki.openstreetmap.org/wiki/GDPR) regarding OpenStreetMap
+Please note that `osm-tag-extract` and `osm-tag-aggregator` are designed to process OpenStreetMap data. This data is available under the [Open Database License](https://openstreetmap.org/copyright). See also the [OSMF wiki](https://wiki.openstreetmap.org/wiki/GDPR) regarding OpenStreetMap
 data and the [GDPR](https://gdpr-info.eu/).
 
