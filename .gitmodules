@@ -1,4 +1,7 @@
-[submodule "src/test/resources/testdata"]
-	path = src/test/resources/testdata
-	url = https://github.com:tagdynamics-org/testdata.git
+#[submodule "src/test/resources/testdata"]
+#	path = src/test/resources/testdata
+#	url = https://github.com:tagdynamics-org/testdata.git
 
+[submodule "testdata"]
+       path = testdata
+       url = https://github.com/tagdynamics-org/testdata.git
