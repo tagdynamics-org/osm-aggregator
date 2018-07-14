@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/tagdynamics-org/osm-tag-aggregator.svg?branch=master)](https://travis-ci.com/tagdynamics-org/osm-tag-aggregator)
+
 # osm-tag-aggregator
 
 [osm-extract-tags](https://github.com/tagdynamics-org/osm-extract-tags) is a tool
