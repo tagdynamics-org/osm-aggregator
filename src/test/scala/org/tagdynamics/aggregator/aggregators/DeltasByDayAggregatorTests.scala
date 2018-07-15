@@ -2,7 +2,8 @@ package org.tagdynamics.aggregator.aggregators
 
 import org.junit.Assert._
 import org.junit.Test
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols}
+import org.tagdynamics.aggregator.JSONCustomProtocols
+import org.tagdynamics.aggregator.common.DayStamp
 
 class DeltasByDayAggregatorTests {
 

@@ -3,6 +3,7 @@ package org.tagdynamics.aggregator
 import org.junit.Assert._
 import org.junit.Test
 import org.tagdynamics.aggregator.aggregators._
+import org.tagdynamics.aggregator.common.DayStamp
 import spray.json._
 
 class JSONTests extends JSONCustomProtocols {

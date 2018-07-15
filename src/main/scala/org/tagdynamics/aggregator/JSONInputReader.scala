@@ -1,6 +1,7 @@
 package org.tagdynamics.aggregator
 
 import org.tagdynamics.aggregator.aggregators._
+import org.tagdynamics.aggregator.common.DayStamp
 import spray.json.{DefaultJsonProtocol, JsArray, JsObject, JsString, JsValue, RootJsonFormat}
 
 /** JSON support for reading input JSONL files (each line is deserialized into a `EntryHistory`) */

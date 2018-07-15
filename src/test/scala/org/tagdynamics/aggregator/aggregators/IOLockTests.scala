@@ -2,7 +2,8 @@ package org.tagdynamics.aggregator.aggregators
 
 import org.junit.Assert._
 import org.junit.Test
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols, Utils}
+import org.tagdynamics.aggregator.common.DayStamp
+import org.tagdynamics.aggregator.{JSONCustomProtocols, Utils}
 import spray.json._
 
 import scala.io.Source

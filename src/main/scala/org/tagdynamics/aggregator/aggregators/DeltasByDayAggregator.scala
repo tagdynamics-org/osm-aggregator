@@ -1,6 +1,7 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols}
+import org.tagdynamics.aggregator.JSONCustomProtocols
+import org.tagdynamics.aggregator.common.DayStamp
 
 case class DeltasByDay[A](key: A, deltas: Map[DayStamp, Int])
 

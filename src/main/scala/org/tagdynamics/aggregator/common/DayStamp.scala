@@ -1,4 +1,4 @@
-package org.tagdynamics.aggregator
+package org.tagdynamics.aggregator.common
 
 import java.text.SimpleDateFormat
 import java.time.{Instant, LocalDateTime, ZoneId}

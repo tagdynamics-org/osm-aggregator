@@ -1,6 +1,7 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.{DayStamp, JSONInputReader, StreamKeyCounter}
+import org.tagdynamics.aggregator.common.DayStamp
+import org.tagdynamics.aggregator.{JSONInputReader, StreamKeyCounter}
 
 /**
  * Describe the different states a map element (or map element revision) can be in

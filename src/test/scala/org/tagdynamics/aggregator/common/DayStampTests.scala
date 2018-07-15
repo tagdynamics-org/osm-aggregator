@@ -1,7 +1,8 @@
-package org.tagdynamics.aggregator
+package org.tagdynamics.aggregator.common
 
 import org.junit.Assert._
 import org.junit.Test
+import org.tagdynamics.aggregator.JSONCustomProtocols
 
 class DayStampTests {
 
