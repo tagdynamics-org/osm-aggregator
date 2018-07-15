@@ -6,7 +6,7 @@ import org.tagdynamics.aggregator.aggregators._
 import org.tagdynamics.aggregator.common.{DayStamp, Deleted, ElementState, JSONCustomProtocols, NotCreated, Visible}
 import spray.json._
 
-class JSONTests extends JSONCustomProtocols {
+class JSONInputReaderTests extends JSONCustomProtocols {
 
   @Test
   def `Spray JSON library can handle tuples`(): Unit ={
@@ -14,30 +14,6 @@ class JSONTests extends JSONCustomProtocols {
     val json: String = "[1,[1,2]]"
     assertEquals(json, obj.toJson.toString)
     assertEquals(obj, json.parseJson.convertTo[(Int, List[Int])])
-  }
-
-  // Note: variables `nc`, `del`, `es` must be typed as `ElementState`
-  val nc: ElementState = NotCreated
-  val ncJson: String = """{"state":"NC","tags":[]}"""
-
-  val del: ElementState = Deleted
-  val delJson: String = """{"state":"DEL","tags":[]}"""
-
-  val es: ElementState = Visible(List("0:crossing", "a:road"))
-  val esJson: String = """{"state":"VIS","tags":["0:crossing","a:road"]}"""
-
-  @Test
-  def `can serialize {NotCreated, Deleted, Visible(tagList)} ElementState types`(): Unit = {
-    assertEquals(ncJson, nc.toJson.toString)
-    assertEquals(delJson, del.toJson.toString)
-    assertEquals(esJson, es.toJson.toString)
-  }
-
-  @Test
-  def `can deserialize {NotCreated, Deleted, Visible(tagList)} ElementState types`(): Unit = {
-    assertEquals(nc, ncJson.parseJson.convertTo[ElementState])
-    assertEquals(del, delJson.parseJson.convertTo[ElementState])
-    assertEquals(es, esJson.parseJson.convertTo[ElementState])
   }
 
   val d1 = DayStamp.from("160101")

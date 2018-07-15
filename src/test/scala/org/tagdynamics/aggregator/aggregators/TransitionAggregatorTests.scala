@@ -2,8 +2,7 @@ package org.tagdynamics.aggregator.aggregators
 
 import org.junit.Assert._
 import org.junit.Test
-import org.tagdynamics.aggregator.JSONCustomProtocols
-import org.tagdynamics.aggregator.common.DayStamp
+import org.tagdynamics.aggregator.common.{Counted, DayStamp, Deleted, ElementState, JSONCustomProtocols, NotCreated, Transition, Visible}
 
 class TransitionAggregatorTests {
 
@@ -51,23 +50,6 @@ class TransitionAggregatorTests {
   def `should pass for small test data`() {
     val p = TransitionsAggregator
     assertEquals(expectedOutput, p.count(input.toIterator).toSet)
-  }
-
-  @Test
-  def `JSON: can serialize/deserialize Counted[Transition[ElementState]] objects`(): Unit = {
-    object I extends JSONCustomProtocols {
-      import spray.json._
-      def toJson(deltas: Counted[Transition[ElementState]]): String = deltas.toJson.toString
-      def fromJson(line: String): Counted[Transition[ElementState]] = line.parseJson.convertTo[Counted[Transition[ElementState]]]
-    }
-
-    val obj: Counted[Transition[ElementState]] = expectedOutput.toSeq.head
-    val json = I.toJson(obj)
-
-    assert(json.length > 10)
-
-    assertEquals(obj, I.fromJson(json))
-    assertEquals(json, I.toJson(I.fromJson(json)))
   }
 
 }
