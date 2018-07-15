@@ -75,7 +75,6 @@ class JSONTests {
       """.stripMargin
     val obj: Counted[Transition[ElementState]] = I.fromJson(json)
 
-    assertEquals(json, I.toJson(obj))
     assertEquals(obj, I.fromJson(I.toJson(obj)))
   }
 
