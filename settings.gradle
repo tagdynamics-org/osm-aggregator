@@ -1,2 +1,4 @@
 include 'osm-tag-aggregator'
+include 'common'
+
 rootProject.name = 'scala-components'
