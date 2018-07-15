@@ -2,7 +2,7 @@ package org.tagdynamics.aggregator.aggregators
 
 import org.junit.Assert._
 import org.junit.Test
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols}
+import org.tagdynamics.aggregator.common._
 
 class DeltasByDayAggregatorTests {
 
@@ -89,28 +89,6 @@ class DeltasByDayAggregatorTests {
     )
 
     assertEquals(expectedOutput, p.apply(input.toIterator).toSet)
-  }
-
-
-  @Test
-  def `JSON: can serialize/deserialize DeltasByDay[ElementState]`(): Unit = {
-    object I extends JSONCustomProtocols {
-      import spray.json._
-      def toJson(deltas: DeltasByDay[ElementState]): String = deltas.toJson.toString
-      def fromJson(line: String): DeltasByDay[ElementState] = line.parseJson.convertTo[DeltasByDay[ElementState]]
-    }
-
-    val day1 = DayStamp.from("041224")
-    val day2 = DayStamp.from("041225")
-    val day3 = DayStamp.from("041226")
-
-    // Note: the type `: DeltasByDay[ElementState]` is needed below. No serializer is eg.
-    // found for DeltasByDay[Visible]
-    val deltas: DeltasByDay[ElementState] = DeltasByDay(Visible(List("a:1")), Map(day1 -> 1, day2 -> -1, day3 -> 2))
-
-    val expectedJson = """{"key":{"state":"VIS","tags":["a:1"]},"deltas":{"041224":1,"041225":-1,"041226":2}}"""
-    assertEquals(expectedJson, I.toJson(deltas))
-    assertEquals(deltas, I.fromJson(expectedJson))
   }
 
 }

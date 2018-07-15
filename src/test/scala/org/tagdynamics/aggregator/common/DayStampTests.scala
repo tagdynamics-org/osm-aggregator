@@ -1,4 +1,4 @@
-package org.tagdynamics.aggregator
+package org.tagdynamics.aggregator.common
 
 import org.junit.Assert._
 import org.junit.Test
@@ -37,20 +37,6 @@ class DayStampTests {
       assertEquals(dayStamp.toString, DayStamp.from(dayStamp.toString).toString)
       assertEquals(dayStamp, DayStamp.from(dayStamp.epochSecs))
     }
-  }
-
-  @Test
-  def `can serialize/deserialize DayStamp objects`(): Unit = {
-    object I extends JSONCustomProtocols {
-      import spray.json._
-      def toJson(ds: DayStamp): String = ds.toJson.toString
-      def fromJson(line: String): DayStamp = line.parseJson.convertTo[DayStamp]
-    }
-
-    val x = DayStamp.from("141130")
-    val xJson: String = I.toJson(x)
-    assertEquals(""""141130"""", xJson)
-    assertEquals(x, I.fromJson(xJson))
   }
 
 }

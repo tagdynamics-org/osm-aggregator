@@ -1,8 +1,6 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols}
-
-case class DeltasByDay[A](key: A, deltas: Map[DayStamp, Int])
+import org.tagdynamics.aggregator.common.{Counted, DayStamp, DeltasByDay, ElementState, JSONCustomProtocols}
 
 sealed trait DeltaCount
 final case class Increase(ts: DayStamp, elementState: ElementState) extends DeltaCount

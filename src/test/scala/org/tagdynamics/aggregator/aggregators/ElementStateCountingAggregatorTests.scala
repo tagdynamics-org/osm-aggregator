@@ -2,7 +2,7 @@ package org.tagdynamics.aggregator.aggregators
 
 import org.junit.Assert._
 import org.junit.Test
-import org.tagdynamics.aggregator.{DayStamp, JSONCustomProtocols}
+import org.tagdynamics.aggregator.common.{Counted, DayStamp, Deleted, ElementState, JSONCustomProtocols, NotCreated, Visible}
 
 // Tests for `TotalRevisionAggregator` and `LiveRevisionAggregator` both outputting `Counted[ElementState]`
 
@@ -59,22 +59,6 @@ class ElementStateCountingAggregatorTests {
 
     assertEquals(expectedOutput, p.count(input.toIterator).toSet)
     assertEquals(Set[Counted[ElementState]](), p.apply(input.toIterator).toSet)
-  }
-
-  @Test
-  def `can serialize/deserialize Counted[ElementState] objects`(): Unit = {
-
-    object I extends JSONCustomProtocols {
-      import spray.json._
-      def toJson(obj: Counted[ElementState]): String = obj.toJson.toString
-      def fromJson(line: String): Counted[ElementState] = line.parseJson.convertTo[Counted[ElementState]]
-    }
-
-    val obj = Counted[ElementState](key = NotCreated, n = 123)
-    val json = """{"key":{"state":"NC","tags":[]},"n":123}"""
-
-    assertEquals(obj, I.fromJson(json))
-    assertEquals(json, I.toJson(obj))
   }
 
 }

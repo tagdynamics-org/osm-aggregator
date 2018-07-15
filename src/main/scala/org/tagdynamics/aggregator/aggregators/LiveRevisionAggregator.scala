@@ -1,6 +1,6 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.JSONCustomProtocols
+import org.tagdynamics.aggregator.common.{Counted, ElementState, JSONCustomProtocols}
 
 /**
  * LiveRevisionAggregator
