@@ -7,7 +7,7 @@
 #
 # will run
 #
-# ./gradlew -PappArgs="['SNAPSHOT_LATEST_REVCOUNT', '/path/to/input.jsonl', '/path/to/output.jsonl']" run
+# ./gradlew -PappArgs="['SNAPSHOT_LATEST_REVCOUNT', '/path/to/input.jsonl', '/path/to/output.jsonl']" osm-tag-aggregator:run
 #
 # TODO: the below fails if no arguments are given
 
@@ -22,4 +22,4 @@ while [[ $# -gt 0 ]]; do
 done
 ARGUMENTS=${ARGUMENTS}]
 
-./gradlew -PappArgs=$ARGUMENTS run
+./gradlew -PappArgs=$ARGUMENTS osm-tag-aggregator:run

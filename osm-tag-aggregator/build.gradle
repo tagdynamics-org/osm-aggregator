@@ -35,3 +35,5 @@ test {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
 }
+
+mainClassName = 'org.tagdynamics.aggregator.Main'

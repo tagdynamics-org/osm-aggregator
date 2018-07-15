@@ -1,5 +1,5 @@
 [submodule "src/test/resources/testdata"]
-	path = src/test/resources/testdata
+	path = osm-tag-aggregator/src/test/resources/testdata
 	url = https://github.com/tagdynamics-org/testdata.git
 
 

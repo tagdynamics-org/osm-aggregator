@@ -1,1 +1,2 @@
-rootProject.name = 'osm-tag-aggregator'
+include 'osm-tag-aggregator'
+rootProject.name = 'scala-components'
