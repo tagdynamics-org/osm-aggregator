@@ -71,19 +71,32 @@ The implementation is streaming and does not need to load the entire input file 
 
 ------
 
-## Setup up and running unit tests
+## Cloning
 
-For running tests one need to clone with `--recurse-submodules` to get the project [testdata](https://github.com/tagdynamics-org/testdata) git submodule. Then the unit tests can be run from command line as follows (provided gradle is first installed):
+This repo contains a git submodule with [test data](https://github.com/tagdynamics-org/testdata).
+To fetch this there are two options when cloning the repo:
 
 ```bash
+# option 1
+git clone git@github.com:tagdynamics-org/osm-tag-aggregator.git
+git submodule update --init
+
+# option 2
 git clone --recurse-submodules git@github.com:tagdynamics-org/osm-tag-aggregator.git
+```
+
+## Running unit tests
+
+Unit tests can be run from command line as follows (provided gradle is first installed):
+
+```bash
 gradle wrapper
 ./gradlew test
 ```
 
 ### IntelliJ IDEA setup up
 
-Import as a gradle problem. During importing, the IDE may ask for the "gradle home directory". See [here](https://stackoverflow.com/questions/18495474/how-to-define-gradles-home-in-idea) for instructions on how to determine this.
+Import as a gradle project. During importing, the IDE may ask for the "gradle home directory". See [here](https://stackoverflow.com/questions/18495474/how-to-define-gradles-home-in-idea) for instructions on how to determine this.
 
 ### Syntax for running
 
@@ -93,7 +106,6 @@ bash launch.sh aggregator /path/to/input.jsonl /path/to/output.jsonl
 
  - `aggregator` is one of `LATEST_REVCOUNTS`, ..., `PER_DAY_DELTA_COUNTS`. See above.
  - input file is output from the [osm-extract-tags](https://github.com/tagdynamics-org/osm-extract-tags) tool.
-
 
 ### Running in the cloud
 
