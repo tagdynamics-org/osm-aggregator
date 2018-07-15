@@ -1,8 +1,6 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.JSONCustomProtocols
-
-case class Transition[A](from: A, to: A)
+import org.tagdynamics.aggregator.common.{Counted, ElementState, JSONCustomProtocols, NotCreated, Transition}
 
 /**
  *  TransitionsAggregator

@@ -1,19 +1,7 @@
 package org.tagdynamics.aggregator.aggregators
 
-import org.tagdynamics.aggregator.common.DayStamp
+import org.tagdynamics.aggregator.common.{Counted, DayStamp, ElementState}
 import org.tagdynamics.aggregator.{JSONInputReader, StreamKeyCounter}
-
-/**
- * Describe the different states a map element (or map element revision) can be in
- *
- * Notes:
- *  - tagList can be empty in Visible state
- *  - NotCreated is only used to output transitions
- */
-sealed trait ElementState
-case object NotCreated extends ElementState
-case class Visible(tagList: List[String]) extends ElementState
-case object Deleted extends ElementState
 
 /**
  * Input data: each input JSONL line is deserialized into a `EntryHistory` object.
@@ -25,9 +13,6 @@ case object EntryHistory extends JSONInputReader {
 
   def deserialize(line: String): EntryHistory = line.parseJson.convertTo[EntryHistory]
 }
-
-/** Used for many output JSONL files, and for intermediate steps */
-case class Counted[A](key: A, n: Int)
 
 trait Aggregator {
 
