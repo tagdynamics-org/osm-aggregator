@@ -1,6 +1,7 @@
 package org.tagdynamics.aggregator
 
 import org.tagdynamics.aggregator.aggregators._
+import org.tagdynamics.aggregator.common.Utils
 
 import scala.io.Source
 

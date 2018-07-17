@@ -3,3 +3,6 @@
 	url = https://github.com/tagdynamics-org/testdata.git
 
 
+[submodule "common"]
+	path = common
+	url = https://github.com/tagdynamics-org/common.git
