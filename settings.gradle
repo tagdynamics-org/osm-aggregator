@@ -2,3 +2,4 @@ include 'osm-tag-aggregator'
 include 'common'
 
 rootProject.name = 'osm-tag-aggregator'
+
