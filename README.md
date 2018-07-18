@@ -78,11 +78,11 @@ To fetch this there are two options when cloning the repo:
 
 ```bash
 # option 1
-git clone git@github.com:tagdynamics-org/osm-tag-aggregator.git
+git clone https://github.com/tagdynamics-org/osm-tag-aggregator.git
 git submodule update --init
 
 # option 2
-git clone --recurse-submodules git@github.com:tagdynamics-org/osm-tag-aggregator.git
+git clone --recurse-submodules https://github.com/tagdynamics-org/osm-tag-aggregator.git
 ```
 
 ## Running unit tests
@@ -113,18 +113,25 @@ bash launch.sh aggregator /path/to/input.jsonl /path/to/output.jsonl
 export DEBIAN_FRONTEND=noninteractive
 sudo apt-get -y update
 sudo apt-get -y upgrade
-sudo apt-get -y install git zip mg tmux
+sudo apt-get -y install git zip mg tmux gradle
+
+# install gradle wrapper & install dependencies
+cd osm-tag-aggregator && gradle wrapper test && cd ..
 
 # install docker: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 # https://hub.docker.com/r/hseeberger/scala-sbt/
 sudo docker pull hseeberger/scala-sbt:8u171_2.12.6_1.1.6
-sudo docker run -v `pwd`/data/:/data -v `pwd`/2-aggregator:/code -it --rm hseeberger/scala-sbt:8u171_2.12.6_1.1.6
+sudo docker run -v `pwd`/data/:/data -v `pwd`/osm-tag-aggregator:/code -it --rm hseeberger/scala-sbt:8u171_2.12.6_1.1.6
+cd /code
+gradle wrapper
+./gradlew test
 
-bash launch.sh LIVE_REVCOUNTS /data/history.tag.jsonl /data/latest-revs.jsonl
-bash launch.sh TOTAL_REVCOUNTS /data/history.tag.jsonl /data/total-rev-counts.jsonl
-bash launch.sh PER_DAY_DELTA_COUNTS /data/history.tag.jsonl /data/per-day-delta-counts.jsonl
-bash launch.sh TRANSITION_COUNTS /data/history.tag.jsonl /data/transition-counts.jsonl
+mkdir /data/aggregates
+bash launch.sh LIVE_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/latest-revs.jsonl
+bash launch.sh TOTAL_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/total-rev-counts.jsonl
+bash launch.sh PER_DAY_DELTA_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/per-day-delta-counts.jsonl
+bash launch.sh TRANSITION_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/transition-counts.jsonl
 ```
 
 ```
