@@ -143,6 +143,13 @@ LATEST_REVCOUNTS      25m
 TRANSITION_COUNTS     27m
 TOTAL_REVCOUNTS       28m
 PER_DAY_DELTA_COUNTS  35m
+
+(t2.medium; 4G memory; 2VCPU)
+LATEST_REVCOUNTS      1h33m
+TRANSITION_COUNTS     ??
+TOTAL_REVCOUNTS       ??
+PER_DAY_DELTA_COUNTS  ??
+
 ```
 
  - [How to transfer data between EC2 instances](http://blog.e-zest.com/how-to-do-scp-from-one-ec2-instance-to-another-ec2-instance/)
