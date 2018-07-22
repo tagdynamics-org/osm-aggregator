@@ -104,7 +104,7 @@ Import as a gradle project. During importing, the IDE may ask for the "gradle ho
 bash launch.sh aggregator /path/to/input.jsonl /path/to/output.jsonl
 ```
 
- - `aggregator` is one of `LATEST_REVCOUNTS`, ..., `PER_DAY_DELTA_COUNTS`. See above.
+ - `aggregator` is one of `LIVE_REVCOUNTS`, ..., `PER_DAY_DELTA_COUNTS`. See above.
  - input file is output from the [osm-extract-tags](https://github.com/tagdynamics-org/osm-extract-tags) tool.
 
 ### Running in the cloud
@@ -128,9 +128,9 @@ gradle wrapper
 ./gradlew test
 
 mkdir /data/aggregates
-bash launch.sh LIVE_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/latest-revs.jsonl
-bash launch.sh TOTAL_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/total-rev-counts.jsonl
-bash launch.sh PER_DAY_DELTA_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/per-day-delta-counts.jsonl
+bash launch.sh LIVE_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/live-revcounts.jsonl
+bash launch.sh TOTAL_REVCOUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/total-revcounts.jsonl
+bash launch.sh PER_DAY_DELTA_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/per-day-deltacounts.jsonl
 bash launch.sh TRANSITION_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggregates/transition-counts.jsonl
 ```
 
@@ -139,15 +139,15 @@ bash launch.sh TRANSITION_COUNTS /data/tag-metadata/tag-history.jsonl /data/aggr
  - Exported revision history JSONL file: 552M lines (5528 batches @100k)
 
 (m5.xlarge; 16G memory; 4VCPU)
-LATEST_REVCOUNTS      25m
-TRANSITION_COUNTS     27m
+LIVE_REVCOUNTS        25m
 TOTAL_REVCOUNTS       28m
+TRANSITION_COUNTS     27m
 PER_DAY_DELTA_COUNTS  35m
 
 (t2.medium; 4G memory; 2VCPU)
-LATEST_REVCOUNTS      1h33m
-TRANSITION_COUNTS     ??
+LIVE_REVCOUNTS        1h33m
 TOTAL_REVCOUNTS       ??
+TRANSITION_COUNTS     ??
 PER_DAY_DELTA_COUNTS  3h5m
 
 ```
