@@ -30,7 +30,7 @@ trait Aggregator {
   final def count(xs: Iterator[EntryHistory]): Seq[Counted[Key]] = {
     StreamKeyCounter
       .keyCounter(xs, (revs: EntryHistory) => extractKeys(revs))
-      .map(kv => Counted(kv._1, kv._2))
+      .view.map(kv => Counted(kv._1, kv._2))
       .toSeq
   }
 

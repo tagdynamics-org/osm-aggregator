@@ -17,7 +17,7 @@ object TotalRevisionAggregator extends Aggregator with JSONCustomProtocols {
   override type Key = ElementState
   override type OutputLine = Counted[ElementState]
 
-  override def extractKeys(x: EntryHistory): Seq[Key] = x.history.map(_._2).distinct
+  override def extractKeys(x: EntryHistory): Seq[Key] = x.history.view.map(_._2).distinct
 
   override def postProsessor(xs: Seq[Counted[Key]]): Seq[Counted[Key]] = xs.filter(x => x.n >= 5).sortBy(x => -x.n)
 
