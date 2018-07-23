@@ -26,7 +26,7 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
     }
 
     (for { (k, ys) <- xs.groupBy((x: Counted[DeltaCount]) => getK(x.key)) }
-      yield (k.key, k.ts, ys.map(signedCount).sum))
+      yield (k.key, k.ts, ys.view.map(signedCount).sum))
       .filter(_._3 != 0) // do not output delta=0
       .toSeq
   }
@@ -34,7 +34,7 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
   // Note: no filtering unlike in many other aggregators
   override def postProsessor(xs: Seq[Counted[DeltaCount]]): Seq[DeltasByDay[ElementState]] = {
     (for { (es, deltasByEs) <- sumSignedDeltas(xs).groupBy(x => x._1) }
-      yield DeltasByDay(es, deltasByEs.map(x => (x._2, x._3)).toMap) ).toSeq
+      yield DeltasByDay(es, deltasByEs.view.map(x => (x._2, x._3)).toMap) ).toSeq
   }
 
   // Extract Increase/Decrease events from the revision history
