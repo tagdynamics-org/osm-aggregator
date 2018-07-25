@@ -34,13 +34,19 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
   // Note: no filtering unlike in many other aggregators
   override def postProsessor(xs: Seq[Counted[DeltaCount]]): Seq[DeltasByDay[ElementState]] = {
     println(s"DeltasByDayAggregator: postProcessor, input size = ${xs.length}")
-    val summed = sumSignedDeltas(xs)
-    println(s"DeltasByDayAggregator: summedDeltas= ${summed.length}")
-    val grouped: Map[ElementState, Seq[(ElementState, DayStamp, Int)]] = summed.groupBy(x => x._1)
-    println(s"DeltasByDayAggregator: grouped= ${grouped.keySet.size}")
 
-    (for { (es, deltasByEs) <- grouped }
-      yield DeltasByDay(es, deltasByEs.view.map(x => (x._2, x._3)).toMap)).toSeq
+    var summed = sumSignedDeltas(xs)
+    println(s"DeltasByDayAggregator: summedDeltas= ${summed.length}")
+
+    val grouped: Seq[(ElementState, Seq[(ElementState, (DayStamp, Int))])] = summed.groupBy(x => x._1).toSeq
+    summed = null // free memory
+    println(s"DeltasByDayAggregator: grouped= ${grouped.length}")
+
+    val res = grouped.view.map {
+      case (es, deltasByEs) => DeltasByDay(es, deltasByEs.view.map(x => x._2).toMap)
+    }
+    println("DeltasByDayAggregator: done")
+    res
   }
 
   // Extract Increase/Decrease events from the revision history
