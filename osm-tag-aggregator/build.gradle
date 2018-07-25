@@ -8,7 +8,7 @@ repositories {
 }
 
 tasks.withType(JavaExec) {
-    jvmArgs = ['-Xms3200M', '-Xmx3200M']
+    jvmArgs = ['-Xms512M', '-Xmx14G']
 
     // See:
     //  - https://discuss.gradle.org/t/how-to-pass-parameters-option-to-javac-compiler-when-building-my-java-project-with-gradle/2106
