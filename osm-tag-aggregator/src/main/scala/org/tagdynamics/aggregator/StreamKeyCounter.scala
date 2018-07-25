@@ -68,13 +68,20 @@ object StreamKeyCounter {
     def f(acc: HashMap[B, Int], x: HashMap[B, Int]): HashMap[B, Int] = {
       currentBatchNr += 1
       val mRows = (currentBatchNr * batchSize) / 1000000
-      print(s"   > batch $currentBatchNr (${mRows}m rows done): #acc = ${acc.keySet.size}, #x = ${x.keySet.size}")
+      println(s"   > batch $currentBatchNr (${mRows}m rows done): #acc = ${acc.keySet.size}, #x = ${x.keySet.size}")
       val res = StreamKeyCounter.mergeMaps(acc, x) // not parallel
       res
     }
 
     val sink: Sink[HashMap[B, Int], Future[HashMap[B, Int]]] = Sink.fold(x0)(f)
-    Await.result(source.runWith(sink), Duration.Inf)
+    val result = Await.result(source.runWith(sink), Duration.Inf)
+
+    // the program will never exit unless we terminate the actor system
+    // https://stackoverflow.com/questions/35583739/why-does-this-simple-akka-streams-program-never-terminate
+    println(" - Shutting down akka ")
+    Await.result(system.terminate(), Duration.Inf)
+
+    result
   }
 
 }
