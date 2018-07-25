@@ -95,7 +95,7 @@ class StreamKeyCounterTest {
   @Test
   def `keys with lots of repeats`() {
 
-    var testEntries: Seq[Int] = {
+    val testEntries: Seq[Int] = {
       val res = ListBuffer[Int]()
       def add(value: Int, repeat: Int): Unit = (1 to repeat).foreach(_ => res += value)
 
@@ -107,7 +107,7 @@ class StreamKeyCounterTest {
       Random.shuffle(res)
     }
 
-    val table1 = StreamKeyCounter.countValues(testEntries.par)
+    val table1 = StreamKeyCounter.keyCounter(testEntries)
     val table2 = countValuesGroupBy(testEntries)
 
     assertEquals(table2, table1)

@@ -1,5 +1,6 @@
 include 'osm-tag-aggregator'
 include 'common'
+include 'scala-apache-licensed'
 
 rootProject.name = 'osm-tag-aggregator'
 
