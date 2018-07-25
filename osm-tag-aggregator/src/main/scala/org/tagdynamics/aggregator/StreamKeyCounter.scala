@@ -57,6 +57,8 @@ object StreamKeyCounter {
     val batchIterator: Iterator[Seq[A]] = xs.grouped(batchSize)
 
     val logicalCores: Int = Runtime.getRuntime.availableProcessors
+    println(s"Starting keyCounter with $logicalCores workers")
+
     val source: Source[HashMap[B, Int], NotUsed] =
       Source.fromIterator(() => batchIterator).via(WorkBalancer.balancer(worker, logicalCores))
 
