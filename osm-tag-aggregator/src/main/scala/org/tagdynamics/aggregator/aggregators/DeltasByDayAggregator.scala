@@ -13,11 +13,9 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
   override type OutputLine = DeltasByDay[ElementState]
 
   def sumSignedDeltas(xs: Seq[Counted[DeltaCount]]): Seq[(ElementState, (DayStamp, Int))] = {
-    case class Timed[A](key: A, ts: DayStamp)
-
-    def getK(x: DeltaCount): Timed[ElementState] = x match {
-      case Increase(ts, es) => Timed(es, ts)
-      case Decrease(ts, es) => Timed(es, ts)
+    def getK(x: DeltaCount): (ElementState, DayStamp) = x match {
+      case Increase(ts, es) => (es, ts)
+      case Decrease(ts, es) => (es, ts)
     }
 
     def signedCount(x: Counted[DeltaCount]): Int = x.key match {
@@ -25,28 +23,23 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
       case Decrease(_, _) => -1 * x.n
     }
 
-    (for { (k, ys) <- xs.groupBy((x: Counted[DeltaCount]) => getK(x.key)) }
-      yield (k.key, (k.ts, ys.view.map(signedCount).sum)))
-      //.filter(_._3 != 0) // output delta=0. This allows us to determine dates of first/last edits
-      .toSeq
+    val foo: Map[(ElementState, DayStamp), Seq[Counted[DeltaCount]]] = xs.groupBy((x: Counted[DeltaCount]) => getK(x.key))
+
+    foo.toSeq.view.map {
+      case ((es, day), dcounts) => (es, (day, dcounts.view.map(signedCount).sum))
+    }.filter { case (_, (_, n)) => n != 0 }
   }
 
   // Note: no filtering unlike in many other aggregators
   override def postProsessor(xs: Seq[Counted[DeltaCount]]): Seq[DeltasByDay[ElementState]] = {
     println(s"DeltasByDayAggregator: postProcessor, input size = ${xs.length}")
-
-    var summed = sumSignedDeltas(xs)
+    val summed = sumSignedDeltas(xs)
     println(s"DeltasByDayAggregator: summedDeltas= ${summed.length}")
+    val grouped: Map[ElementState, Seq[(ElementState, (DayStamp, Int))]] = summed.groupBy(x => x._1)
+    println(s"DeltasByDayAggregator: grouped= ${grouped.keySet.size}")
 
-    val grouped: Seq[(ElementState, Seq[(ElementState, (DayStamp, Int))])] = summed.groupBy(x => x._1).toSeq
-    summed = null // free memory
-    println(s"DeltasByDayAggregator: grouped= ${grouped.length}")
-
-    val res = grouped.view.map {
-      case (es, deltasByEs) => DeltasByDay(es, deltasByEs.view.map(x => x._2).toMap)
-    }
-    println("DeltasByDayAggregator: done")
-    res
+    (for { (es, deltasByEs) <- grouped }
+      yield DeltasByDay(es, deltasByEs.view.map(x => x._2).toMap)).toSeq
   }
 
   // Extract Increase/Decrease events from the revision history
