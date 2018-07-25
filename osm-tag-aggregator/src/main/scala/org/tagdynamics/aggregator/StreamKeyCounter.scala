@@ -1,7 +1,15 @@
 package org.tagdynamics.aggregator
 
+import akka.NotUsed
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl._
+
+import org.tagdynamics.sal.WorkBalancer
+
 import scala.collection.immutable.HashMap
-import scala.collection.parallel.ParSeq
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 object StreamKeyCounter {
 
@@ -13,66 +21,59 @@ object StreamKeyCounter {
     }
   }
 
-  /** How to add one element to a map */
-  def seqOp[A](countMap: HashMap[A, Int], elem: A): HashMap[A, Int] = {
-    countMap + (elem -> (countMap.getOrElse(elem, 0) + 1))
+  /** Non-parallel key-counter */
+  def keyCounter[A](zs: Seq[A]): HashMap[A, Int] = {
+    val z: Seq[(A, Int)] = zs.groupBy(x => x).mapValues(x => x.length).toSeq
+    HashMap[A, Int](z: _*)
   }
-
-  /**
-   * From a sequence of values [x1, x2, ...] create
-   *   HashMap(
-   *     x1 -> <total counts for x1>,
-   *     x2 -> <total counts for x2>,
-   *     ...
-   *   )
-   */
-  def countValues[A](xs: ParSeq[A]): HashMap[A, Int] = xs.aggregate(HashMap.empty[A, Int])(seqOp, mergeMaps)
 
   /**
    * A streaming key counter
    *
-   * Note: performance is sensitive to the parallelization batch size. Too small or too large
-   * will decrease performance
+   * Processing pipeline
+   *  - Input <x1, x2, x3, ...>
+   *  - batched inputs <[ x:s of size `batchSize`], [ x:s of size `batchSize`], ...>
+   *  - process (count x:s) batches in parallel
+   *  - combine and return { x1: count of x1, x2: count of x2:, ... }
+   *
+   * Note: performance is sensitive to the parallelization batch size.
+   *
+   * TODO: Check best value of batch size. Too small or too large will decrease
+   * performance. This will likely depend on the number of cores, too.
+   *
    */
   def keyCounter[A, B](xs: Iterator[A],
                        extractKeys: A => Seq[B],
                        batchSize: Int = 100000): HashMap[B, Int] = {
 
-    /*
-    // TODO: would a direct call to aggregate be faster?
-    xs.aggregate(HashMap.empty[ElementState, Int])(Utils.seqOp[ElementState], Utils.mergeMaps)
-    )*/
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
 
-    if (batchSize <= 0) {
-      throw new IllegalArgumentException("batchSize must be > 0")
-    }
+    if (batchSize <= 0) throw new IllegalArgumentException("batchSize must be > 0")
 
-    // - Batch incoming entries.
-    // - Extract keys in parallel
-    // - Compute occurrences in each batch in parallel
-    val batchedInput: Iterator[HashMap[B, Int]] =
-    xs.grouped(batchSize)
-      .map((arr: Seq[A]) => {
-        val keys: ParSeq[B] = arr.par.flatMap(extractKeys)
+    def counter(zs: Seq[A]): HashMap[B, Int] = keyCounter(zs.flatMap(extractKeys))
 
-        /*
-        val m = keys.groupBy(x => x).mapValues(x => x.length).seq
-        HashMap[B, Int](m.toSeq : _*)
-        */
+    val worker = Flow.fromFunction[Seq[A], HashMap[B, Int]](counter)
+    val batchIterator: Iterator[Seq[A]] = xs.grouped(batchSize)
 
-        StreamKeyCounter.countValues(keys)
-      })
+    val logicalCores: Int = Runtime.getRuntime.availableProcessors
+    println(s"Starting keyCounter with $logicalCores workers")
+
+    val source: Source[HashMap[B, Int], NotUsed] =
+      Source.fromIterator(() => batchIterator).via(WorkBalancer.balancer(worker, logicalCores))
 
     var currentBatchNr = 0
     val x0 = HashMap.empty[B, Int]
 
-    // Merge output from batched data by merging { key -> counts }-maps
-    batchedInput.foldLeft(x0)((collectedMap, batchMap) => {
+    def f(acc: HashMap[B, Int], x: HashMap[B, Int]): HashMap[B, Int] = {
       currentBatchNr += 1
-      println(s"   > batch $currentBatchNr: x = ${collectedMap.keySet.size}, y = ${batchMap.keySet.size}")
-      val res = StreamKeyCounter.mergeMaps(collectedMap, batchMap) // not parallel
+      println(s" > batch $currentBatchNr: x = ${acc.keySet.size}, y = ${x.keySet.size}")
+      val res = StreamKeyCounter.mergeMaps(acc, x) // not parallel
       res
-    })
+    }
+
+    val sink: Sink[HashMap[B, Int], Future[HashMap[B, Int]]] = Sink.fold(x0)(f)
+    Await.result(source.runWith(sink), Duration.Inf)
   }
 
 }

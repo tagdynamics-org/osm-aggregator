@@ -22,6 +22,12 @@ tasks.withType(JavaExec) {
 
 dependencies {
     compile project(':common')
+    compile project(':scala-apache-licensed')
+
+    compile 'org.scala-lang:scala-library:2.12.2'
+    compile 'com.typesafe.akka:akka-actor_2.12:2.5.14'
+    compile 'com.typesafe.akka:akka-stream_2.12:2.5.14'
+
     testCompile 'junit:junit:4.12'
 }
 
