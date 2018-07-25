@@ -67,7 +67,8 @@ object StreamKeyCounter {
 
     def f(acc: HashMap[B, Int], x: HashMap[B, Int]): HashMap[B, Int] = {
       currentBatchNr += 1
-      println(s" > batch $currentBatchNr: x = ${acc.keySet.size}, y = ${x.keySet.size}")
+      val mRows = (currentBatchNr * batchSize) / 1000000
+      print(s"   > batch $currentBatchNr (${mRows}m rows done): #acc = ${acc.keySet.size}, #x = ${x.keySet.size}")
       val res = StreamKeyCounter.mergeMaps(acc, x) // not parallel
       res
     }
