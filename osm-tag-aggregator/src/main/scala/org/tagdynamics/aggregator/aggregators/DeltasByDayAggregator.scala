@@ -12,7 +12,7 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
   override type Key = DeltaCount
   override type OutputLine = DeltasByDay[ElementState]
 
-  def sumSignedDeltas(xs: Seq[Counted[DeltaCount]]): Seq[(ElementState, DayStamp, Int)] = {
+  def sumSignedDeltas(xs: Seq[Counted[DeltaCount]]): Seq[(ElementState, (DayStamp, Int))] = {
     case class Timed[A](key: A, ts: DayStamp)
 
     def getK(x: DeltaCount): Timed[ElementState] = x match {
@@ -26,8 +26,8 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
     }
 
     (for { (k, ys) <- xs.groupBy((x: Counted[DeltaCount]) => getK(x.key)) }
-      yield (k.key, k.ts, ys.view.map(signedCount).sum))
-      .filter(_._3 != 0) // do not output delta=0
+      yield (k.key, (k.ts, ys.view.map(signedCount).sum)))
+      //.filter(_._3 != 0) // output delta=0. This allows us to determine dates of first/last edits
       .toSeq
   }
 
