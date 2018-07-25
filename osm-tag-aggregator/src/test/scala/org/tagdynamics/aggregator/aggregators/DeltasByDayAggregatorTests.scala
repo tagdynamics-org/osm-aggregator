@@ -38,12 +38,12 @@ class DeltasByDayAggregatorTests {
       Counted(Decrease(day3, del), 1)
     )
 
-    val expectedOutput: Seq[(ElementState, DayStamp, Int)] = Seq(
-      (es, day1, +1),
-      (es, day2, -7),
-      (es, day3, +1),
-      (nc, day1, +9),
-      (del, day1, +2)
+    val expectedOutput: Seq[(ElementState, (DayStamp, Int))] = Seq(
+      (es, (day1, +1)),
+      (es, (day2, -7)),
+      (es, (day3, +1)),
+      (nc, (day1, +9)),
+      (del, (day1, +2))
       // (del, day3, 0) should not appear
     )
 
