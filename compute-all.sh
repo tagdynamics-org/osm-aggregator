@@ -1,7 +1,7 @@
 set -eux
 
 # input JSONL file with exported tag data
-INPUT_DATE=$1
+INPUT_DATA=$1
 
 # where to place aggregated data. Directory should already exist
 OUT_DIR=$2
