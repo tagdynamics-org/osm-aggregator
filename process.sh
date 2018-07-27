@@ -10,8 +10,9 @@ set -eux
 #   export S3_ZIP_FILE=..
 #
 
-apt-get -y update && apt-get -y upgrade
-apt-get -y install git zip mg tmux awscli s3cmd gradle
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install git zip mg awscli s3cmd gradle
 
 # get aggregator codes
 cd /root
@@ -19,7 +20,7 @@ git clone --recurse-submodules https://github.com/tagdynamics-org/osm-tag-aggreg
 cd osm-tag-aggregator
 gradle wrapper
 
-# download tag metadata
+# download raw tag metadata from s3
 cd /root
 mkdir in-data
 cd in-data
@@ -37,7 +38,13 @@ mkdir work-dir/aggregates
 cd osm-tag-aggregator
 bash compute-all.sh /root/work-dir/tag-metadata/tag-history.jsonl /root/work-dir/aggregates/
 
-# make output zip file
-cd /root/workdir
-rm ./tag-metadata/tag-history.jsonl
-zip -r /root/$S3_FILE .
+# make output zip file. 
+# remove huge input file. Keep all other metadata files
+cd /root/work-dir
+rm ./tag-metadata/tag-history.jsonl 
+zip -9r /root/$S3_FILE .
+
+# store output to s3
+s3cmd put /root/$S3_ZIP_FILE s3://$S3_OUTPUT_BUCKET_NAME/
+
+echo "DONE"
