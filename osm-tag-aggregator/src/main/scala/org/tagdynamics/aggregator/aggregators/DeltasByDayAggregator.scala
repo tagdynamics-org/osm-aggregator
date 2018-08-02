@@ -27,7 +27,7 @@ object DeltasByDayAggregator extends Aggregator with JSONCustomProtocols {
 
     foo.toSeq.view.map {
       case ((es, day), dcounts) => (es, (day, dcounts.view.map(signedCount).sum))
-    }.filter { case (_, (_, n)) => n != 0 }
+    }
   }
 
   // Note: no filtering unlike in many other aggregators

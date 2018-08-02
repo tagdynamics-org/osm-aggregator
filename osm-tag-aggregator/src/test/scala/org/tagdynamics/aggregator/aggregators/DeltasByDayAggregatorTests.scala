@@ -43,8 +43,8 @@ class DeltasByDayAggregatorTests {
       (es, (day2, -7)),
       (es, (day3, +1)),
       (nc, (day1, +9)),
-      (del, (day1, +2))
-      // (del, day3, 0) should not appear
+      (del, (day1, +2)),
+      (del, (day3, 0)) // delta=0 update
     )
 
     assertEquals(expectedOutput.toSet, p.sumSignedDeltas(input).toSet)
@@ -84,7 +84,7 @@ class DeltasByDayAggregatorTests {
     val expectedOutput: Set[DeltasByDay[ElementState]] = Set(
       DeltasByDay(es1, Map(day1 -> 1, day2 -> -1, day3 -> 2)),
       DeltasByDay(es2, Map(day1 -> 1)),
-      //DeltasByDay(es3, Map(day3 -> 0)), <-- don't store delta=0 updates
+      DeltasByDay(es3, Map(day3 -> 0)), // delta=0 updates
       DeltasByDay(del, Map(day2 -> 2, day3 -> -1))
     )
 
